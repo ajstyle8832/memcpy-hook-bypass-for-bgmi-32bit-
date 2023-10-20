@@ -1,0 +1,46 @@
+Here is another method to hook _memcpy using a trampoline approach:
+
+```cpp
+#include <dlfcn.h>
+
+void* (*original_memcpy)(void* dest, const void* src, size_t n); 
+
+// Trampoline that will contain our hook logic
+void* trampoline_memcpy(void* dest, const void* src, size_t n) {
+
+  // Manipulate data before original
+  
+  void* result = original_memcpy(dest, src, n); 
+  
+  // Manipulate data after original
+
+  return result;
+}
+
+// Our _memcpy thunk 
+void* _memcpy(void* dest, const void* src, size_t n) {
+
+  // Jump to the trampoline 
+  void* result = trampoline_memcpy(dest, src, n);
+  
+  return result;
+}
+
+// Hook by modifying _memcpy
+void hook_memcpy() {
+
+  // Get the original address
+  original_memcpy = dlsym(RTLD_NEXT, "memcpy");
+
+  // Override _memcpy with a jump to our trampoline
+  void* _memcpy_addr = (void*)&_memcpy;
+  unsigned char jump[5] = {0xE9, 0xXX, 0XX, 0XX, 0XFF};
+
+  int trampoline_offset = (int)&trampoline_memcpy - ((int)_memcpy_addr + 5);
+  memcpy(&jump[1], &trampoline_offset, 4);
+
+  memcpy(_memcpy_addr, jump, 5); 
+}
+```
+
+Instead of putting the hook logic directly in _memcpy, we redirect execution to a separate trampoline function. This avoids modifying the target function. The key steps are similar - get original, add a jump, execute custom logic.
