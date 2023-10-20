@@ -1,0 +1,46 @@
+Here is an example of hooking the _memcpy thunk function using inline hooking:
+
+```cpp
+#include <dlfcn.h>
+#include <sys/mman.h>
+
+// Function prototypes
+void* (*original_memcpy)(void* dest, const void* src, size_t n) = NULL;
+void* my_memcpy(void* dest, const void* src, size_t n);
+
+// Save original memcpy address  
+original_memcpy = (void* (*)(void*, const void*, size_t))dlsym(RTLD_NEXT, "memcpy");
+
+// Our hook function
+void* my_memcpy(void* dest, const void* src, size_t n) {
+
+  // Custom logic
+  printf("In my_memcpy hook!\n");
+  
+  // Alter copy size
+  if(n > 100) {
+    n = 100;
+  }
+
+  // Call original
+  void* result = original_memcpy(dest, src, n);
+  
+  return result;
+}
+
+// Inline hooking _memcpy
+void** memcpy_ptr = (void**)dlsym(RTLD_DEFAULT, "_memcpy"); 
+
+void* trampoline = mmap(NULL, 0x1000, PROT_EXEC | PROT_WRITE | PROT_READ, MAP_ANON | MAP_PRIVATE, 0, 0);
+
+memcpy(trampoline, memcpy_ptr, 0x5); // Copy original instructions
+
+*(unsigned char*)(trampoline+0x5) = 0xE9; // JMP opcode
+*(void**)(trampoline+0x6) = (void*)my_memcpy; // Address of hook
+
+mprotect(trampoline, 0x1000, PROT_READ | PROT_EXEC); 
+
+*memcpy_ptr = trampoline; // Redirect _memcpy to trampoline
+```
+
+This hooks _memcpy by using a trampoline to jump to our custom my_memcpy function. We can add logic to manipulate the copy or alter the parameters before calling the original memcpy.
