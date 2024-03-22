@@ -2,12 +2,15 @@
 Here are a few methods to hook the _memcpy thunk function:
 
 
-VISIT MY OFFCIAL SITE YOU GET ALL TUOTIRALS AND HOOKING AND LIB MODDING CODES AND SCRIPTS 
+# VISIT MY OFFCIAL SITE YOU GET ALL TUOTIRALS AND HOOKING AND LIB MODDING CODES AND SCRIPTS 
 
-http://hackingtech4u.shop  
-http://hackingtech4u.shop
-http://hackingtech4u.shop
-http://hackingtech4u.shop
+https://www.hookcoder.shop
+https://www.hookcoder.shop
+https://www.hookcoder.shop
+https://www.hookcoder.shop
+https://www.hookcoder.shop
+https://www.hookcoder.shop
+https://www.hookcoder.shop
 
 #antibanbypass 
 #esp      #modmenu 
